@@ -1,0 +1,122 @@
+<!-- extend base layout -->
+{% extends "base1.html" %}
+{% block content %}
+<h4>Hi, {{g.user.firstname}} {{g.user.lastname}} </h4>
+{% include 'flash.html' %}
+
+{% from "_formhelpers.html" import render_field %}
+
+
+<script>
+    $(function() {
+        $(".datepicker").datepicker({dateFormat: 'yy-m-d'});
+    });
+  </script>
+
+<div class="row">
+      
+
+        <div class="col-md-8">
+            <h3>{{title}} ({{users|length}})</h3> 
+
+<br />
+
+
+<!--<form class="form" method="post" action=""  role="form">-->
+<form class="form-row align-items-center" method="get" action="{{url_for('main')}}"  role="form">
+    {{ render_field(form2.term,placeholder='Enter Name ....') }}
+  &nbsp;
+  &nbsp;
+  &nbsp;
+  <!--<input type="submit" value="Search"> -->
+  <button type="submit" class="btn btn-primary btn-sm"> Search </button>
+</form>
+
+
+
+
+<br />
+<table class="table table-hover">
+                <thead><tr>
+                <th>Picture</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>View</th>
+
+                </tr>
+                </thead>
+
+
+ {% for user in users %}
+              <tr class="{% if loop.index % 2==0 %}even{%else%}odd{% endif %}">
+                <td>
+                    {% if not user.picture %} 
+                        <img src="/static/img/noimage.jpg" width='40px'
+                        height='40px'> 
+                    {% else %}
+                        <img src="{{url_for('uploaded_file',filename=user.picture)}}" width="40px">
+                    {% endif %}
+                </td>
+                <td>{{user.firstname}}</td>
+                <td>{{user.lastname}} </td>
+                <td>{{user.email}} </td>
+            
+
+            <td>
+                <a class="btn
+            btn-info my-2 my-sm-0" href="{{url_for('detail',id=user.id)}}"><b><span class="glyphicon
+                        glyphicon-user"></span></b> View Detail</a>
+ 
+            
+            </td>
+
+
+            </tr>
+            {% endfor %}
+
+            </table>
+    </div>
+
+
+
+
+
+        <div class="col-md-4">
+            <h3> Add Member </h3>
+
+
+
+<div class="well col-md-8">
+<form class="form" method="post" action="{{url_for('main')}}" enctype="multipart/form-data" role="form">
+                    {{form.hidden_tag()}}
+  <dl>
+    {{ render_field(form.firstname) }}
+    {{ render_field(form.lastname) }}
+    {{ render_field(form.middlename)}}
+    {{ render_field(form.email)}}
+    {{ render_field(form.dob,class='datepicker')}}
+    {{ render_field(form.marriage_date,class='datepicker')}}
+    {{ render_field(form.baptism_date,class='datepicker')}}
+    {{ render_field(form.marital_status)}}
+    {{ render_field(form.no_children)}}
+    {{ render_field(form.employment_status)}}
+    {{ render_field(form.picture) }} 
+    {{ render_field(form.occupation) }}
+    {{ render_field(form.place_of_employment) }}
+    {{ render_field(form.certification) }}
+    {{ render_field(form.street) }}
+    {{ render_field(form.city) }}
+    {{ render_field(form.state) }}
+    {{ render_field(form.zip) }}
+  </dl>
+  <p><input type="submit" value="Save"> </p>
+</form>
+</div>
+
+
+        </div>
+
+    </div>
+
+{% endblock %}

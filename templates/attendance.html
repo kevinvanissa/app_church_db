@@ -1,0 +1,114 @@
+<!-- extend base layout -->
+{% extends "base1.html" %}
+{% block content %}
+<h5><i>Hi, you are logged in as {{g.user.firstname}} {{g.user.lastname}}</i> </h5>
+{% include 'flash.html' %}
+
+  <script>
+    $(function() {
+        $(".datepicker").datepicker({dateFormat: 'yy-m-d'});
+    });
+  </script>
+
+<div class="row">
+      
+        <div class="col-md-4">
+            <h3> {{title}} </h3> 
+            {{sschool.name}} history for {{user.firstname}} {{user.lastname}}:
+<br />
+<br />
+<a class="btn
+btn-info btn-xs" href="{{url_for('attendance',id=user.id,sid=sid,year=year,which='prev')}}"><b><span class="glyphicon
+                        glyphicon-arrow-left"></span></b> Previous</a>
+&nbsp;
+&nbsp;
+<b>Year {{year}} </b>
+&nbsp;
+&nbsp;
+<a class="btn
+btn-info btn-xs" href="{{url_for('attendance',id=user.id,sid=sid,year=year,which='next')}}"> Next &nbsp; <b> <span class="glyphicon glyphicon-arrow-right"></span></b></a>
+
+<br />
+<br />
+            {% for months in mnames %}
+
+            {% for day in mycal[months] %}
+            {{months}}    {{mSplit(day)[0]}} - {%  if mSplit(day)[2] == 'PRESENT' %}  <span style="color:blue;">{{mSplit(day)[2]}}</span>   <a href="{{url_for('delete_attend',year=year,month=mNum(months),day=mSplit(day)[0],id=user.id,sid=sid)}}"><span style="color:red;"><i class="far fa-calendar-minus"></i></span></a>{% else %} <span style="color:red">{{mSplit(day)[2]}}</span>  {% endif %}   <br />
+             {% endfor %}
+              <hr>
+             {% endfor %}
+    </div>
+
+        <div class="col-md-8">
+            <h3>Add Attendance</h3> 
+
+
+<div class="center well col-md-8">
+    <form class="form-horizontal" action="{{url_for('attendance',id=user.id,sid=sschool.id)}}" role="form" method="post">
+                    {{form.hidden_tag()}}
+            <legend>Enter Date</legend>
+
+                   <div class="form-group{% if form.errors.email %} has-error{% endif %}">
+                    <div class="col-md-8">
+                            {{ form.date(class="form-control datepicker",placeholder="Select Date...")}}
+                                {% for error in form.errors.date %}
+                                <span class="help-inline myerror">[{{error}}]</span><br>
+                            {% endfor %}
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-8">
+                        <button type="submit" class="btn btn-success btn-block">    <i class="far fa-calendar-alt"></i> &nbsp; Submit Attendance</button>
+
+                    </div>
+                </div>
+        </form>
+
+<br />
+<br />
+<br />
+        <div id="canvas-holder" style="width:100%;align:left;">
+                <canvas id="chart-area"></canvas>
+            </div>
+
+           <script>
+		var config = {
+			type: 'pie',
+			data: {
+				datasets: [{
+					data: [
+                        {{weeks_so_far}},
+                        {{total_visits}},
+					],
+					backgroundColor: [
+						window.chartColors.yellow,
+						window.chartColors.blue,
+					],
+					label: 'Attendance Data'
+				}],
+				labels: [
+					'Weeks so far',
+					'Church Visits',
+				]
+			},
+			options: {
+				responsive: true
+			}
+		};
+
+
+       	window.onload = function() {
+			var ctx = document.getElementById('chart-area').getContext('2d');
+			window.myPie = new Chart(ctx, config);
+		};
+
+           </script>
+
+
+        </div>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+<!-- extend base layout -->
+{% extends "base1.html" %}
+{% block content %}
+<h5><i>Hi, you are logged in as {{g.user.firstname}} {{g.user.lastname}}</i> </h5>
+{% include 'flash.html' %}
+
+
+<div class="row">
+      
+        <div class="col-md-6">
+            <h3> {{sschool.name}} </h3> 
+            {{title}}
+<br />
+<br />
+
+</div>
+        <div id="canvas-holder" style="width:100%;align:left;">
+                <canvas id="chart-area"></canvas>
+            </div>
+
+           <script>
+		var config = {
+			type: 'line',
+			data: {
+				datasets: [{
+                    data: {{attend_count}},
+					label: 'Weekly Attendance',
+                    borderColor: "#3e95cd",
+                    fill: false
+
+				}],
+                labels: {{attend_dates | safe}}
+			},
+			options: {
+				responsive: true
+			}
+		};
+
+
+       	window.onload = function() {
+			var ctx = document.getElementById('chart-area').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+		};
+
+           </script>
+
+
+
+    </div>
+
+{% endblock %}

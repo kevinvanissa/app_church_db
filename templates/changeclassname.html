@@ -1,0 +1,25 @@
+<!-- extend base layout -->
+{% extends "base1.html" %}
+{% block content %}
+<h4>Hi, {{g.user.firstname}} {{g.user.lastname}}!</h4>
+{% include 'flash.html' %}
+<h3>{{title}}</h3>                    
+    <br />
+    <br />
+<div class="row">
+                    
+{% from "_formhelpers.html" import render_field %}
+<div class="well col-md-8">
+<form class="form" method="post" action="{{url_for('changeclassname',id=ss.id)}}" role="form">
+                    {{form.hidden_tag()}}
+  <dl>
+    {{render_field(form.name) }}
+  </dl>
+  <p><input type="submit" value="Save"> </p>
+</form>
+</div>
+
+
+      </div>
+
+{% endblock %}

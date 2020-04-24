@@ -1,0 +1,50 @@
+<!-- extend base layout -->
+{% extends "base1.html" %}
+{% block content %}
+<h4>Hi, {{g.user.firstname}} {{g.user.lastname}}!</h4>
+{% include 'flash.html' %}
+
+
+<script>
+    $(function() {
+        $(".datepicker").datepicker({dateFormat: 'yy-m-d'});
+    });
+  </script>
+
+
+<div class="row">
+        <div class="col-md-8 col-md-offset-4">
+            <h3>Edit User: {{user.firstname}} {{user.lastname}}</h3> 
+
+{% from "_formhelpers.html" import render_field %}
+<div class="well col-md-4">
+<form class="form" method="post" action="{{url_for('edituser',id=id)}}" enctype="multipart/form-data" role="form">
+                    {{form.hidden_tag()}}
+  <dl>
+    {{ render_field(form.firstname) }}
+    {{ render_field(form.lastname) }}
+    {{ render_field(form.middlename)}}
+    {{ render_field(form.email) }}
+    {{ render_field(form.dob,class='datepicker')}}
+    {{ render_field(form.marriage_date,class='datepicker')}}
+    {{ render_field(form.baptism_date,class='datepicker')}}
+    {{ render_field(form.marital_status)}}
+    {{ render_field(form.no_children)}}
+    {{ render_field(form.employment_status)}}
+    {{ render_field(form.picture) }} 
+    {{ render_field(form.occupation) }}
+    {{ render_field(form.place_of_employment) }}
+    {{ render_field(form.certification) }}
+    {{ render_field(form.street) }}
+    {{ render_field(form.city) }}
+    {{ render_field(form.state) }}
+    {{ render_field(form.zip) }}
+  </dl>
+  <p><input type="submit" value="Save"> </p>
+</form>
+</div>
+
+      </div>
+    </div>
+
+{% endblock %}

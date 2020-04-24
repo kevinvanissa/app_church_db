@@ -1,0 +1,67 @@
+<!-- extend base layout -->
+{% extends "base1.html" %}
+{% block content %}
+<h4>Hi, {{g.user.firstname}} {{g.user.lastname}} </h4>
+{% include 'flash.html' %}
+<div class="row">
+      
+
+        <div class="col-md-8">
+            <h3>{{title}} ({{sclasses|length}})</h3> 
+
+
+<br />
+<br />
+<table class="table table-hover">
+                <thead><tr>
+                <th>Name</th>
+                <th></th>
+                </tr>
+                </thead>
+
+
+ {% for sclass in sclasses %}
+                <td>  {{sclass.name}} &nbsp;&nbsp; <a href="{{url_for('changeclassname',id=sclass.id)}}"> &nbsp; <i class="fas fa-edit"></i></a> </td>
+                <td>    </td>
+            <td>
+                <a class="btn
+                btn-info btn-xs" href="{{url_for('ss_members',id=sclass.id)}}"><b><span class="glyphicon
+                        glyphicon-user"></span></b> List Members </a>
+ 
+            </td>
+
+            </tr>
+            {% endfor %}
+
+            </table>
+
+
+    </div>
+
+
+
+        <div class="col-md-4">
+            <h3> Create a New Class  </h3>
+
+
+
+
+    {% from "_formhelpers.html" import render_field %}
+    <div class="well col-md-12">
+    <form class="form" method="post" action="" role="form">
+                        {{form.hidden_tag()}}
+    <dl>
+        {{ render_field(form.name) }}
+    </dl>
+    <p><input type="submit" value="Save"> </p>
+    </form>
+    <br />
+
+    </div>
+        
+</div>
+
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,93 @@
+<!-- extend base layout -->
+{% extends "base1.html" %}
+{% block content %}
+<h4>Hi, {{g.user.firstname}} {{g.user.lastname}} </h4>
+{% include 'flash.html' %}
+
+
+
+
+
+<div class="row">
+      
+
+        <div class="col-md-8">
+            <h3>{{title}} of {{department.dept_name}} ({{dmembers|length}})</h3> 
+
+<br />
+
+ 
+<br />
+<br />
+<br />
+<table class="table table-hover">
+                <thead><tr>
+                <th>Picture</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>View</th>
+
+                </tr>
+                </thead>
+
+
+ {% for user in dmembers %}
+              <tr class="{% if loop.index % 2==0 %}even{%else%}odd{% endif %}">
+                <td>
+                    {% if not user.User.picture %} 
+                        <img src="/static/img/noimage.jpg" width='40px'
+                        height='40px'> 
+                    {% else %}
+                        <img src="{{url_for('uploaded_file',filename=user.User.picture)}}" width="40px">
+                    {% endif %}
+                </td>
+                <td>{{user.User.firstname}}</td>
+                <td>{{user.User.lastname}} </td>
+                <td>{{user.User.email}} </td>
+            
+
+            <td>
+
+<a class="btn btn-danger btn-xs" href="{{url_for('deregisterdept',id=user.User.id,did=department.id)}}" onclick="javascript:return deleteItem();">
+                        <i class="fas fa-user-slash"></i>    </a>
+ 
+
+
+
+            </td>
+
+
+            </tr>
+            {% endfor %}
+
+            </table>
+    </div>
+
+
+
+
+
+        <div class="col-md-4">
+            <h3> Add Member to Department </h3>
+
+
+
+{% from "_formhelpers.html" import render_field %}
+<div class="well col-md-4">
+<form class="form" method="post" action="" role="form">
+                    {{form.hidden_tag()}}
+  <dl>
+    {{ render_field(form.member) }}
+  </dl>
+  <p><input type="submit" value="Attach Member"> </p>
+</form>
+</div>
+
+<br />
+
+        </div>
+
+    </div>
+
+{% endblock %}

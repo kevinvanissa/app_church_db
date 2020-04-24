@@ -1,0 +1,33 @@
+<!-- extend base layout -->
+{% extends "base1.html" %}
+{% block content %}
+<h4>Hi, {{g.user.firstname}} {{g.user.lastname}}!</h4>
+<a href='{{ url_for('detail',id=user.id) }}'> &lt;&lt; Back to detail </a>
+{% include 'flash.html' %}
+<div class="row">
+        <div class="col-md-8 col-md-offset-4">
+            <h3>Departments for {{user.firstname}} {{user.lastname}} </h3> 
+
+            <br />
+
+            {% for department in departments %} {{loop.index}}. {{department.Department.dept_name}}  &nbsp;&nbsp;<a href="{{url_for('removedept',id=department.MemberDepartment.id,mid=user.id)}}" onclick="javascript: return deleteItem();" style="color:red;"> <i class="fas fa-trash-alt"></i> </a>    <br>  
+            {% endfor %}
+
+            <br />
+                    
+{% from "_formhelpers.html" import render_field %}
+<div class="well col-md-4">
+<form class="form" method="post" action="{{url_for('editdepartment',id=user.id)}}" role="form">
+                    {{form.hidden_tag()}}
+  <dl>
+    {{render_field(form.dept_name) }}
+  </dl>
+  <p><input type="submit" value="Save"> </p>
+</form>
+</div>
+
+
+      </div>
+    </div>
+
+{% endblock %}
