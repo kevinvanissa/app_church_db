@@ -180,7 +180,11 @@ def main():
     users = []
     term = request.args.get('term')
     if term:
-        users = User.query.order_by(User.lastname).filter((User.firstname.like('%'+term+'%')) | (User.lastname.like('%'+term+'%')) ).all()
+        mterm = term.split(" ")
+        if len(mterm) == 2:
+            users = User.query.order_by(User.lastname).filter((User.firstname.like('%'+mterm[0]+'%')),(User.lastname.like('%'+mterm[1]+'%')) ).all()
+        else:
+            users = User.query.order_by(User.lastname).filter((User.firstname.like('%'+term+'%')) | (User.lastname.like('%'+term+'%')) ).all()
     else:
         users = User.query.order_by(User.lastname).all()
 
@@ -614,6 +618,23 @@ def removephone(id,pid):
     return redirect(url_for('editphone',id=pid))
 
 
+
+@app.route('/searchusers', methods=['GET'])
+def searchusers():
+    term = request.args.get('term')
+    terms =[]
+    html=""
+    users = User.query.filter(User.firstname.like('%'+str(term)+'%') |  User.lastname.like('%'+str(term)+'%')      ).limit(10)
+    for u in users:
+        d = dict()
+        d["key"] = u.id
+        d["value"] = u.firstname + " " + u.lastname
+        d["id"] = u.id
+        d["firstname"] = u.firstname
+        d["lastname"] = u.lastname 
+        # d["email"] = u.email 
+        terms.append(d)
+    return jsonify(terms) 
 
 
 @app.route('/editdepartment/<int:id>',methods=['GET','POST'])
