@@ -1,7 +1,6 @@
 <!-- extend base layout -->
 {% extends "base1.html" %}
 {% block content %}
-<h4>Hi, {{g.user.firstname}} {{g.user.lastname}} </h4>
 {% include 'flash.html' %}
 
 
@@ -12,6 +11,7 @@
       
 
         <div class="col-md-8">
+            <br />
             <h3>{{title}} of {{sschool.name}} ({{ssmembers|length}})</h3> 
 
 <br />

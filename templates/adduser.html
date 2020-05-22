@@ -1,34 +1,44 @@
 <!-- extend base layout -->
-{% extends "base.html" %}
+{% extends "base1.html" %}
 {% block content %}
-<h4>Hi, {{g.user.firstname}} {{g.user.lastname}}!</h4>
 {% include 'flash.html' %}
 <div class="row">
-        <div class="col-md-8 col-md-offset-4">
-            <h3>Add User</h3> 
-
+        <div class="col-md-12 col-md-offset-4">
+            <br />
+            <h3 align="center">Add User</h3> 
+</div>
 {% from "_formhelpers.html" import render_field %}
-<div class="well col-md-4">
-<form class="form" method="post" action="{{url_for('adduser')}}" enctype="multipart/form-data" role="form">
+<div class="col-md-6 offset-4">
+
+<form method="post" action="{{url_for('adduser')}}" enctype="multipart/form-data" role="form">
                     {{form.hidden_tag()}}
   <dl>
-    {{ render_field(form.firstname) }}
-    {{ render_field(form.lastname) }}
-    {{ render_field(form.middlename)}}
+    {{ render_field(form.firstname,class="form-control input-lg")}}
+    {{ render_field(form.lastname,class="form-control input-lg") }}
+    {{ render_field(form.middlename,class="form-control input-lg")}}
+    {{ render_field(form.gender)}}
+    {{ render_field(form.email,class="form-control input-lg")}}
+    {{ render_field(form.dob,class='datepicker form-control input-lg')}}
+    {{ render_field(form.marriage_date,class='datepicker form-control input-lg')}}
+    {{ render_field(form.baptism_date,class='datepicker form-control input-lg')}}
+    {{ render_field(form.marital_status)}}
+    {{ render_field(form.no_children)}}
+    {{ render_field(form.employment_status)}}
     {{ render_field(form.picture) }} 
-    {{ render_field(form.occupation) }}
-    {{ render_field(form.place_of_employment) }}
-    {{ render_field(form.certification) }}
-    {{ render_field(form.street) }}
-    {{ render_field(form.city) }}
-    {{ render_field(form.state) }}
-    {{ render_field(form.zip) }}
+    {{ render_field(form.occupation,class="form-control input-lg") }}
+    {{ render_field(form.place_of_employment,class="form-control input-lg") }}
+    {{ render_field(form.certification,class="form-control input-lg") }}
+    {{ render_field(form.street,class="form-control input-lg") }}
+    {{ render_field(form.city,class="form-control input-lg") }}
+    {{ render_field(form.state,class="form-control input-lg") }}
+    {{ render_field(form.zip,class="form-control input-lg") }}
   </dl>
-  <p><input type="submit" value="Save"> </p>
+  <br />
+  <p><input class="btn btn-block btn-success" type="submit" value="Create User"> </p>
 </form>
+
 </div>
 
-      </div>
     </div>
 
 {% endblock %}

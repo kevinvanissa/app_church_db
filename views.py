@@ -18,13 +18,13 @@
 from flask import render_template, jsonify
 from app import app, db, lm
 from .models import User, ROLE_ADMIN, INACTIVE_USER, Phone, Department, MemberDepartment, FamilyRelationship, Church, MemberChurch,Family,SabbathSchool,SabbathSchoolAttend,SabbathSchoolMembers
-from .forms import LoginForm, UploadForm, ChangePasswordForm, RegistrationForm,EditUserForm,EditPhoneForm,DepartmentForm,FamilyForm,AddUserForm,AttendanceForm, SabbathSchoolForm,SabbathSchoolMemberForm,SearchForm, ResetPasswordForm,AddDepartmentForm,DepartmentMemberForm,OtherSabbathSchoolMemberForm
+from .forms import LoginForm, UploadForm, ChangePasswordForm, RegistrationForm,EditUserForm,EditPhoneForm,DepartmentForm,FamilyForm,AddUserForm,AttendanceForm, SabbathSchoolForm,SabbathSchoolMemberForm,SearchForm, ResetPasswordForm,AddDepartmentForm,DepartmentMemberForm,OtherSabbathSchoolMemberForm, AdvancedSearchForm
 from werkzeug import check_password_hash, generate_password_hash, secure_filename
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory, abort
 import uuid
 from flask_login import login_user, logout_user, current_user, login_required
 from config import ALLOWED_EXTENSIONS
-from functools import wraps
+from functools import wraps, reduce
 import os
 import csv
 import time as pytime
@@ -172,6 +172,70 @@ def register():
         form=form,
         )
 
+
+
+@app.route('/reports',methods=['GET','POST'])
+@login_required
+def reports():
+    import operator 
+
+    op = {
+            '>':operator.gt,
+            '<':operator.lt,
+            '=':operator.eq,
+            '!=':operator.ne,
+            '<=':operator.le,
+            '>=':operator.ge
+        }
+    form = AdvancedSearchForm()
+    gender = request.args.get("gender")
+    deceased = request.args.get("deceased")
+    area = request.args.get("area")
+    age1 = request.args.get("age1")
+    age2 = request.args.get("age2")
+    operator1 = request.args.get("operator1")
+    operator2 = request.args.get("operator2")
+
+    query_dict = dict() 
+    if gender:
+        query_dict['gender'] = gender 
+
+    if deceased:
+        query_dict['deceased'] = deceased
+
+
+
+    users = User.query.filter_by(**query_dict)
+
+    query_list = []
+    if area:
+        query_list.append(User.street.ilike("%"+area+"%"))
+        query_list.append(User.city.ilike("%"+area+"%"))
+        users = users.filter(
+                reduce(
+                    lambda a, b:(
+                        a | b),query_list))
+
+
+
+    userages = users.order_by(User.lastname).all()
+    if age1 and age2 and operator1 and operator2:
+        # users = [u for u in userages if u.get_age() > 30 and u.get_age() < 50 ]
+        users = [u for u in userages if op[operator1](u.get_age(),int(age1)) and  op[operator2](u.get_age(),int(age2))]
+    
+    if age1 and operator1:
+        users = [u for u in userages if op[operator1](u.get_age(),int(age1))]
+
+
+    if age2 and operator2:
+        # debug(age2)
+        # debug(operator2)
+        users = [u for u in userages if op[operator2](u.get_age(),int(age2))]
+
+
+    return render_template('reports.html',form=form,users=users)
+
+
 @app.route('/main', methods=['GET', 'POST'])
 @login_required
 def main():
@@ -179,14 +243,91 @@ def main():
     form2 = SearchForm()
     users = []
     term = request.args.get('term')
+
+    #===========================================================
+    import operator 
+
+    op = {
+            '>':operator.gt,
+            '<':operator.lt,
+            '=':operator.eq,
+            '!=':operator.ne,
+            '<=':operator.le,
+            '>=':operator.ge
+        }
+    form3 = AdvancedSearchForm()
+    gender = request.args.get("gender")
+    deceased = request.args.get("deceased")
+    area = request.args.get("area")
+    age1 = request.args.get("age1")
+    age2 = request.args.get("age2")
+    operator1 = request.args.get("operator1")
+    operator2 = request.args.get("operator2")
+
+    query_dict = dict() 
+    if gender:
+        query_dict['gender'] = gender 
+
+    if deceased:
+        query_dict['deceased'] = deceased
+
+
+
+    users = User.query.filter_by(**query_dict)
+
+    query_list = []
+    if area:
+        query_list.append(User.street.ilike("%"+area+"%"))
+        query_list.append(User.city.ilike("%"+area+"%"))
+        users = users.filter(
+                reduce(
+                    lambda a, b:(
+                        a | b),query_list))
+
+
+        #===========================================================
+
+    #FIXME: These need to fix like the above
+    query_list2 = []
     if term:
         mterm = term.split(" ")
         if len(mterm) == 2:
-            users = User.query.order_by(User.lastname).filter((User.firstname.like('%'+mterm[0]+'%')),(User.lastname.like('%'+mterm[1]+'%')) ).all()
+            query_list2.append(User.firstname.ilike("%"+mterm[0]+"%"))
+            query_list2.append(User.lastname.ilike("%"+mterm[1]+"%"))
+            users = users.filter(
+                    reduce(
+                        lambda a, b:(
+                            a & b), query_list2))
+
+            # users = User.query.order_by(User.lastname).filter((User.firstname.like('%'+mterm[0]+'%')),(User.lastname.like('%'+mterm[1]+'%')) ).all()
         else:
-            users = User.query.order_by(User.lastname).filter((User.firstname.like('%'+term+'%')) | (User.lastname.like('%'+term+'%')) ).all()
-    else:
-        users = User.query.order_by(User.lastname).all()
+            query_list2.append(User.firstname.ilike("%"+term+"%"))
+            query_list2.append(User.lastname.ilike("%"+term+"%"))
+            users = users.filter(
+                    reduce(
+                        lambda a, b: (
+                            a | b),query_list2))
+
+            # users = User.query.order_by(User.lastname).filter((User.firstname.like('%'+term+'%')) | (User.lastname.like('%'+term+'%')) ).all()
+    # else:
+        # users = User.query.order_by(User.lastname).all()
+
+    users = users.order_by(User.lastname).all()
+
+
+    if age1 and age2 and operator1 and operator2:
+        # users = [u for u in userages if u.get_age() > 30 and u.get_age() < 50 ]
+        users = [u for u in users if op[operator1](u.get_age(),int(age1)) and  op[operator2](u.get_age(),int(age2))]
+    
+    if age1 and operator1:
+        users = [u for u in users if op[operator1](u.get_age(),int(age1))]
+
+
+    if age2 and operator2:
+        debug(age2)
+        debug(operator2)
+        users = [u for u in users if op[operator2](u.get_age(),int(age2))]
+
 
 
     if form.validate_on_submit():
@@ -229,7 +370,8 @@ def main():
             title='Members',
             users=users,
             form=form,
-            form2=form2
+            form2=form2,
+            form3=form3
             )
 
 
@@ -717,12 +859,14 @@ def edituser(id):
         user.firstname = form.firstname.data
         user.lastname = form.lastname.data
         user.middlename = form.middlename.data
+        user.gender = form.gender.data
         user.dob = form.dob.data
         user.marriage_date = form.marriage_date.data
         user.baptism_date = form.baptism_date.data
         user.marital_status = form.marital_status.data
         user.no_children = form.no_children.data
         user.employment_status = form.employment_status.data
+        user.deceased = form.deceased.data
         user.occupation = form.occupation.data
         user.place_of_employment = form.place_of_employment.data
         user.certification = form.certification.data
@@ -739,12 +883,14 @@ def edituser(id):
         form.firstname.data = user.firstname
         form.lastname.data = user.lastname
         form.middlename.data = user.middlename
+        form.gender.data = user.gender
         form.dob.data = user.dob
         form.marriage_date.data = user.marriage_date
         form.baptism_date.data = user.baptism_date
         form.marital_status.data = user.marital_status
         form.no_children.data = user.no_children
         form.employment_status.data = user.employment_status
+        form.deceased.data = user.deceased
         form.occupation.data = user.occupation
         form.place_of_employment.data = user.place_of_employment
         form.certification.data = user.certification
@@ -766,6 +912,11 @@ def adduser():
 #        abort(404)
     form = AddUserForm()
     if form.validate_on_submit():
+        if form.email.data:
+            email = User.query.filter_by(email=form.email.data).first()
+            if email:
+                flash('This email already exists!',category='danger')
+                return redirect(url_for('adduser'))
 
         filename = ""
         file = request.files['picture']
@@ -778,9 +929,16 @@ def adduser():
                 flash('Only jpeg, jpg or png files are accepted',category='danger')
                 return redirect(url_for('adduser'))
         user = User(
+            email = form.email.data,
             firstname = form.firstname.data,
             lastname = form.lastname.data,
             middlename = form.middlename.data,
+            gender = form.gender.data,
+            dob = form.dob.data,
+            marriage_date = form.marriage_date.data,
+            baptism_date = form.baptism_date.data,
+            marital_status = form.marital_status.data,
+            no_children = form.no_children.data,
             picture = filename,
             occupation = form.occupation.data,
             place_of_employment = form.place_of_employment.data,

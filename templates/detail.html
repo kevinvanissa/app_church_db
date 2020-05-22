@@ -1,9 +1,9 @@
   {% extends "base1.html" %} {% block content %}
 
-  <h4>Hi, {{g.user.firstname}} {{g.user.lastname}}</h4>{% include 'flash.html' %}
 
   <div class="row">
     <div class="col-md-8">
+        <br />
       <h3>{{title}}</h3>
 
       <p align="center">{% if not user.picture %} <img src="/static/img/noimage.jpg" width='100px' height='100px'> {% else %} 

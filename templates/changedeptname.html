@@ -1,13 +1,14 @@
 <!-- extend base layout -->
 {% extends "base1.html" %}
 {% block content %}
-<h4>Hi, {{g.user.firstname}} {{g.user.lastname}}!</h4>
 {% include 'flash.html' %}
+<br />
     <h3>{{title}}</h3>                    
     <br />
     <br />
 <div class="row">
 {% from "_formhelpers.html" import render_field %}
+<br />
 <div class="well col-md-8">
 <form class="form" method="post" action="{{url_for('changedeptname',id=dept.id)}}" role="form">
                     {{form.hidden_tag()}}

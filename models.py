@@ -7,6 +7,7 @@ ROLE_USER = 0
 ROLE_ADMIN = 1
 ACTIVE_USER = 1
 INACTIVE_USER = 0
+DECEASED=1
 
 
 
@@ -20,19 +21,21 @@ class Member(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True)
+    email = db.Column(db.String(120))
     firstname = db.Column(db.String(120), nullable=False)
     lastname = db.Column(db.String(120), nullable=False)
     middlename = db.Column(db.String(120))
-    dob = db.Column(db.DateTime)
-    marriage_date = db.Column(db.DateTime)
-    baptism_date = db.Column(db.DateTime)
+    gender = db.Column(db.String(6))
+    dob = db.Column(db.Date)
+    marriage_date = db.Column(db.Date)
+    baptism_date = db.Column(db.Date)
     marital_status = db.Column(db.String(120))
     no_children = db.Column(db.Integer)
     employment_status = db.Column(db.String(120))
     password = db.Column(db.String(140))
     status = db.Column(db.SmallInteger, default=INACTIVE_USER)
     role = db.Column(db.SmallInteger, default=ROLE_USER)
+    deceased = db.Column(db.String(8))
     picture = db.Column(db.String(100))
     occupation = db.Column(db.String(120))
     place_of_employment = db.Column(db.String(120))
@@ -58,6 +61,15 @@ class User(db.Model):
 
     def get_id(self):
         return str(self.id)
+
+    def get_age(self):
+        #FIXME: This will return 0 if no age was entered in the system
+        from datetime import date
+        year = date.today().year
+        yyear = date.today().year
+        if self.dob:
+            yyear = self.dob.year
+        return year - yyear
 
     def __repr__(self):
         return '<Member %r %r>' % (self.firstname, self.lastname)
@@ -86,7 +98,7 @@ class SabbathSchoolMembers(db.Model):
 class SabbathSchoolAttend(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     ss_class = db.Column(db.Integer, db.ForeignKey('sabbath_school.id'))
-    attend_date = db.Column(db.DateTime)
+    attend_date = db.Column(db.Date)
     member = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 

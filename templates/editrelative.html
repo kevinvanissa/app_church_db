@@ -1,7 +1,7 @@
 <!-- extend base layout -->
 {% extends "base1.html" %}
 {% block content %}
-<h4>Hi, {{g.user.firstname}} {{g.user.lastname}}!</h4>
+<br />
 <a href='{{ url_for('detail',id=user.id) }}'> &lt;&lt; Back to detail </a>
 {% include 'flash.html' %}
 <div class="row">
