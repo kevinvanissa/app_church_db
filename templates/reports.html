@@ -1,0 +1,54 @@
+<!-- extend base layout -->
+{% extends "base1.html" %}
+{% block content %}
+<h4>Hi, {{g.user.firstname}} {{g.user.lastname}} </h4>
+{% include 'flash.html' %}
+<div class="row">
+      
+
+        <div class="col-md-6">
+            <h3> Advance Search  </h3>
+
+
+    {% from "_formhelpers.html" import render_field %}
+    <div class="col-md-12">
+    <form class="form" method="get" action="" role="form">
+                        {{form.hidden_tag()}}
+    <p>
+        {{ render_field(form.gender) }}
+    </p>
+
+    <p>
+        {{ render_field(form.deceased) }}
+    </p>
+
+    <p>
+        {{ render_field(form.area) }}
+    </p>
+<div class="form-group form-inline">
+         Find Age &nbsp;&nbsp;&nbsp;{{ render_field(form.operator1) }} &nbsp;&nbsp; &nbsp; {{ render_field(form.age1,size='3') }}  &nbsp;&nbsp;AND Age  &nbsp;&nbsp;{{ render_field(form.operator2) }} &nbsp;&nbsp; {{ render_field(form.age2,size='3') }} 
+</div>
+
+
+    <p><input class="btn  btn-success" type="submit" value="Search"> </p>
+    </form>
+    </div>
+        
+</div>
+
+
+
+            <div class="col-md-6">
+                <h3> Search Results</h3>
+
+                {% for u in users %}
+                {{u.firstname}} {{u.lastname}}  {{u.get_age()}}<br />
+                {% endfor %}
+            </div>
+
+
+
+
+    </div>
+
+{% endblock %}
